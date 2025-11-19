@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/lista-de-tarefa-api.props" />
+</Project>
