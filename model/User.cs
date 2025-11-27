@@ -13,6 +13,16 @@ namespace lista_de_tarefa_api.model
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+        public ICollection<ManageTask> Tasks { get; set; } = new List<ManageTask>();
+    }
+    public class RegisterUserDto
+    {        
+        public string Name { get; set; }
+        [EmailAddress]
+        [Required]
+        public string Email { get; set; }
+        [Required]
+        public string Password { get; set; }
     }
     public class LoginUser
     {

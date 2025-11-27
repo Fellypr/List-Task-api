@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using lista_de_tarefa_api.data;
 using lista_de_tarefa_api.model;
+using lista_de_tarefa_api.Services;
 using Microsoft.EntityFrameworkCore;
 using BCrypt.Net;
 namespace lista_de_tarefa_api.controller
@@ -15,22 +16,34 @@ namespace lista_de_tarefa_api.controller
     public class AuthenticationUser : ControllerBase
     {
         private readonly AppDbContext _DbContext;
-        public AuthenticationUser(AppDbContext context)
+        private readonly IJwtService _jwtService;
+        private readonly ILogger<AuthenticationUser> _logger;
+
+        public AuthenticationUser(AppDbContext context , IJwtService jwtService, ILogger<AuthenticationUser> logger)
         {
             _DbContext = context;
+            _jwtService = jwtService;
+            _logger = logger;
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> AuthenticateUser([FromBody] RegisterUser user)
+        public async Task<ActionResult> AuthenticateUser([FromBody] RegisterUserDto user)
         {
             if (String.IsNullOrWhiteSpace(user.Email) || String.IsNullOrWhiteSpace(user.Password))
             {
                 return BadRequest("Invalid client request");
             }
+            var newUser = new RegisterUser
+            {
+                Name = user.Name,
+                Email = user.Email,
+                Password = BCrypt.Net.BCrypt.HashPassword(user.Password)
+            };
             try
             {
                 var userFound = await _DbContext.RegisterUsers.FirstOrDefaultAsync(x => x.Email == user.Email);
                 var userNameCheck = await _DbContext.RegisterUsers.FirstOrDefaultAsync(x => x.Name == user.Name);
+
 
                 if (userFound != null)
                 {
@@ -41,10 +54,9 @@ namespace lista_de_tarefa_api.controller
                 }
                 else
                 {
-                    user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-                    _DbContext.RegisterUsers.Add(user);
+                    _DbContext.RegisterUsers.Add(newUser);
                     await _DbContext.SaveChangesAsync();
-                    return Ok(user);          
+                    return Ok($"Seja Bem Vindo {user.Name}");          
                 }
                 
                 
@@ -56,7 +68,7 @@ namespace lista_de_tarefa_api.controller
             }
             
         }
-        [HttpPost("Login")]
+        [HttpPost("login")]
 
         public async Task<ActionResult> LoginUser([FromBody] RegisterUser user)
         {
@@ -69,13 +81,23 @@ namespace lista_de_tarefa_api.controller
             {
                 var checkEmail = await _DbContext.RegisterUsers.FirstOrDefaultAsync(x => x.Email == user.Email);
 
+
                 if(checkEmail == null)
                 {
                     return NotFound("Usuario não encontrado");
                 }
                 else if(BCrypt.Net.BCrypt.Verify(user.Password, checkEmail.Password))
                 {
-                    return Ok("Login efetuado com sucesso");
+                    var token = _jwtService.GenerateToken(checkEmail);
+                    return Ok(new
+                    {
+                        token = token,
+                        user = new {
+                            id = checkEmail.IdUser,
+                            name = checkEmail.Name
+                        }
+                    });
+
                 }else
                 {
                     return BadRequest("Email ou Senha incorreta");

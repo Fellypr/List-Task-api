@@ -10,7 +10,16 @@ namespace lista_de_tarefa_api.data
     public class AppDbContext : DbContext
     {
         public DbSet<RegisterUser> RegisterUsers { get; set; }
+        public DbSet<ManageTask> ManageTasks { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        { }
+        {}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+           modelBuilder.Entity<ManageTask>()
+                .HasOne(t => t.RegisterUser)
+                .WithMany(u => u.Tasks)
+                .HasForeignKey(t => t.IdUser)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }
