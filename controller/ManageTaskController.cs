@@ -27,7 +27,7 @@ namespace lista_de_tarefa_api.controller
         public async Task<ActionResult> RegisterTask([FromBody] RegisterTaskDto task)
         {
             var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier);
-            if(idUserToken == null || !int.TryParse(idUserToken.Value, out int idUser))
+            if (idUserToken == null || !int.TryParse(idUserToken.Value, out int idUser))
             {
                 return Unauthorized("O Id do Usuario nao foi encontrado");
             }
@@ -38,7 +38,7 @@ namespace lista_de_tarefa_api.controller
                 DateTask = dateInUtc,
                 Status = task.Status,
                 IdUser = idUser
-                
+
             };
 
             try
@@ -46,35 +46,68 @@ namespace lista_de_tarefa_api.controller
                 _DbContext.ManageTasks.Add(NewTask);
                 await _DbContext.SaveChangesAsync();
                 return CreatedAtAction(nameof(GetTask), new { id = NewTask.IdTask }, NewTask);
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine($"Aqui estou: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
+        [HttpGet("getAllTasks")]
+
+        public async Task<ActionResult<IEnumerable<ManageTask>>> GetAllTasks([FromQuery] DateTime? targetDate)
+        {
+            try
+            {
+                var idUserToken = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (idUserToken == null || !int.TryParse(idUserToken, out int idUser))
+                {
+                    return Unauthorized("O Id do Usuario nao foi encontrado");
+                }
+                var dateInUtc = targetDate.HasValue ? DateTime.SpecifyKind(targetDate.Value, DateTimeKind.Utc) : (DateTime?)null;
+                var searchTasks = await _DbContext.ManageTasks
+                .Where(x => x.IdUser == idUser)
+
+                .Where(t => dateInUtc == null || (t.DateTask.Date == dateInUtc.Value.Date))
+                .ToListAsync();
+
+                if (!searchTasks.Any())
+                {
+                    return Ok(new List<ManageTask>());
+                }
+                return Ok(searchTasks);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Aqui estou: {ex.Message}");
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
+
         [HttpGet("getTask/{id}")]
 
-        public async Task<ActionResult <ManageTask>>GetTask(int id)
+        public async Task<ActionResult<ManageTask>> GetTask(int id)
         {
             var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier);
-            if(idUserToken == null || !int.TryParse(idUserToken.Value, out int idUser))
+            if (idUserToken == null || !int.TryParse(idUserToken.Value, out int idUser))
             {
                 return Unauthorized("O Id do Usuario nao foi encontrado");
             }
 
             var task = await _DbContext.ManageTasks.FirstOrDefaultAsync(x => x.IdTask == id && x.IdUser == idUser);
 
-            if(task == null)
+            if (task == null)
             {
                 return NotFound();
             }
             return task;
         }
-        
+
 
     }
 
-    public interface IActionResult<T>
-    {
-    }
+
 }
