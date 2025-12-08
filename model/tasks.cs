@@ -14,12 +14,16 @@ namespace lista_de_tarefa_api.model
         public string Status { get; set; }
         public DateTime DateTask { get; set; }
         public int IdUser { get; set; }
-        public RegisterUser RegisterUser { get; set; }  
+        public RegisterUser RegisterUser { get; set; }
     }
     public class RegisterTaskDto
     {
         public string NameTask { get; set; }
         public string Status { get; set; }
         public DateTime DateTask { get; set; }
+    }
+    public class UpdateTaskDto
+    {
+        public string Status { get; set; }
     }
 }

@@ -107,7 +107,62 @@ namespace lista_de_tarefa_api.controller
         }
 
 
+
+
+        [HttpPut("updateTask/{id}")]
+        public async Task<ActionResult> UpdateTask(int id, [FromBody] UpdateTaskDto updatedTask)
+        {
+            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (idUserToken == null || !int.TryParse(idUserToken.Value, out int idUser))
+            {
+                return Unauthorized("O Id do Usuario nao foi encontrado");
+            }
+            var task = await _DbContext.ManageTasks.FirstOrDefaultAsync(x => x.IdTask == id && x.IdUser == idUser);
+            if (task == null)
+            {
+                return NotFound();
+            }
+            task.Status = updatedTask.Status;
+
+            try
+            {
+                _DbContext.ManageTasks.Update(task);
+                await _DbContext.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Aqui estou: {ex.Message}");
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpDelete("deleteTask/{id}")]
+
+        public async Task<ActionResult> DeleteTask(int id)
+        {
+            var idUserToken = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (idUserToken == null || !int.TryParse(idUserToken.Value, out int idUser))
+            {
+                return Unauthorized("O Id do Usuario nao foi encontrado");
+            }
+            var task = await _DbContext.ManageTasks.FirstOrDefaultAsync(x => x.IdTask == id && x.IdUser == idUser);
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                _DbContext.ManageTasks.Remove(task);
+                await _DbContext.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Aqui estou: {ex.Message}");
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
-
-
 }
