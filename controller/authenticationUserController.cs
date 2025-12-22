@@ -85,7 +85,7 @@ namespace lista_de_tarefa_api.controller
         }
         [HttpPost("login")]
 
-        public async Task<ActionResult> LoginUser([FromBody] RegisterUser user)
+        public async Task<ActionResult> LoginUser([FromBody] LoginUserDto user)
         {
             if (String.IsNullOrWhiteSpace(user.Email) || String.IsNullOrWhiteSpace(user.Password))
             {

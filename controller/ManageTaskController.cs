@@ -31,7 +31,17 @@ namespace lista_de_tarefa_api.controller
             {
                 return Unauthorized("O Id do Usuario nao foi encontrado");
             }
+            if(string.IsNullOrWhiteSpace(task.NameTask) || string.IsNullOrWhiteSpace(task.DateTask.ToString()))
+            {
+                return BadRequest("O Nome da Tarefa ou a Data não pode estar Vazio.");
+            }
             var dateInUtc = DateTime.SpecifyKind(task.DateTask, DateTimeKind.Utc);
+            var checkTask = await _DbContext.ManageTasks.FirstOrDefaultAsync(x => x.NameTask == task.NameTask && x.IdUser == idUser && x.DateTask.Date == dateInUtc.Date);
+
+            if (checkTask != null)
+            {
+                return Conflict("Já existe uma Tarefa Com Esse Nome Nessa Data.");
+            }
             var NewTask = new ManageTask
             {
                 NameTask = task.NameTask,
@@ -49,8 +59,8 @@ namespace lista_de_tarefa_api.controller
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Aqui estou: {ex.Message}");
-                return StatusCode(500, ex.Message);
+                Console.WriteLine(ex.Message);
+                return StatusCode(500,"Erro no servidor tente mais tarde.");
             }
         }
         [HttpGet("getAllTasks")]

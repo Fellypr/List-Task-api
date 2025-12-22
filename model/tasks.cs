@@ -18,8 +18,12 @@ namespace lista_de_tarefa_api.model
     }
     public class RegisterTaskDto
     {
+        [Required(ErrorMessage = "O campo Nome da Tarefa é Obrigatório.")]
+        [MinLength(3, ErrorMessage = "O Nome da Tarefa deve ter no mínimo 3 caracteres.")]
+        [MaxLength(100, ErrorMessage = "O Nome da Tarefa deve ter no máximo 100 caracteres.")]
         public string NameTask { get; set; }
         public string Status { get; set; }
+        [Required(ErrorMessage = "O campo Data da Tarefa é Obrigatório.")]
         public DateTime DateTask { get; set; }
     }
     public class UpdateTaskDto

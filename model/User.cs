@@ -17,16 +17,22 @@ namespace lista_de_tarefa_api.model
     }
     public class RegisterUserDto
     {        
-        public string Name { get; set; }
-        [EmailAddress]
-        [Required]
+        public string Name { get; set; }    
+        [EmailAddress(ErrorMessage = "Formato de Email Inválido.")]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@gmail\.com$", ErrorMessage = "Use o Email do Gmail.")]
         public string Email { get; set; }
-        [Required]
+        [Required(ErrorMessage = "O campo Senha é Obrigatório.")]
+        [MinLength(6, ErrorMessage = "A Senha deve ter no mínimo 6 caracteres.")]
+        [MaxLength(20, ErrorMessage = "A Senha deve ter no máximo 20 caracteres.")]
         public string Password { get; set; }
     }
-    public class LoginUser
+    public class LoginUserDto
     {
+        [EmailAddress(ErrorMessage = "Formato de Email Inválido.")]
+        [Required(ErrorMessage = "O campo Email é Obrigatório.")]
         public string Email { get; set; }
+        [Required(ErrorMessage = "O campo Senha é Obrigatório.")]
+        [MinLength(6, ErrorMessage = "A Senha deve ter no mínimo 6 caracteres.")]   
         public string Password { get; set; }
     }
 }
