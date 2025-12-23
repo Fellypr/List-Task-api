@@ -15,10 +15,11 @@ namespace lista_de_tarefa_api.data
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
+                .AddEnvironmentVariables()
                 .Build();
 
          
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var connectionString = configuration.GetConnectionString("DefaultConnection") ?? configuration["ConnectionStrings__DefaultConnection"];
 
          
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
