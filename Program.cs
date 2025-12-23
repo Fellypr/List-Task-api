@@ -43,9 +43,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirFrontend",
         policy => policy
-            .WithOrigins("http://localhost:3000","https://list-task-jade.vercel.app")
+            .SetIsOriginAllowed(origin => new Uri(origin).Host.EndsWith(".vercel.app") || origin.Contains("localhost"))
             .AllowAnyMethod()
             .AllowAnyHeader()
+            .AllowCredentials()
     );
 });
 
