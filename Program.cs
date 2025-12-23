@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(configuration.GetConnectionString("defaultConnection"))
+    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
 );
 
 
@@ -43,7 +43,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirFrontend",
         policy => policy
-            .WithOrigins("http://localhost:3000")
+            .WithOrigins("http://localhost:3000","https://list-task-jade.vercel.app/")
             .AllowAnyMethod()
             .AllowAnyHeader()
     );
