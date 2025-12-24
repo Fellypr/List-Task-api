@@ -8,13 +8,14 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
+var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") 
+                      ?? configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
+    options.UseNpgsql(connectionString)
 );
 
-
 builder.Services.AddScoped<IJwtService, JwtService>();
-
 
 builder.Services.AddAuthentication(options =>
 {
@@ -53,6 +54,11 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+if (app.Environment.IsProduction())
+{
+    app.UseDeveloperExceptionPage(); 
+}
 
 app.UseRouting();
 app.UseCors("PermitirFrontend");

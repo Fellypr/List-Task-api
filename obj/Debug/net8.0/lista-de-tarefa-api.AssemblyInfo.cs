@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("lista-de-tarefa-api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4aae176ed25c4fe2b19c71b3acbfa4b0341b3086")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f0c4436651cd53d93d5bb30257fc0cce11b008e0")]
 [assembly: System.Reflection.AssemblyProductAttribute("lista-de-tarefa-api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("lista-de-tarefa-api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
